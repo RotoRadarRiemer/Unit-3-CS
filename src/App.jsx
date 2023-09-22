@@ -6,71 +6,109 @@ import Posts from './components/Posts';
 import Header from './components/header';
 import './styles/app.css';
 import { loginUser } from './api/authApi';
+import CreatePost from './components/CreatePost';
+import UserProfile from './components/UserProfile';
+import { fetchPosts } from './api/posts';
 
 function App() {
-    const [token, setToken] = useState(sessionStorage.getItem('token') || null);
-    const [message, setMessage] = useState(null);
+  const [token, setToken] = useState(sessionStorage.getItem('token') || null);
+  const [message, setMessage] = useState(null);
+  const [allPosts, setAllPosts] = useState([]);
+  const [userPosts, setUserPosts] = useState([]);
 
-    useEffect(() => {
-        console.log('Token state updated:', token);
-    }, [token]);
-  
-    const logIn = (newToken) => {
-        console.log("Setting token to state:", newToken);
-        setToken(newToken);
-        sessionStorage.setItem('token', newToken);
-        setMessage('Successfully logged in!');
-      };      
-      
-  
-    const logOut = () => {
-      setToken(null);
-      sessionStorage.removeItem('token');
-      setMessage('Successfully logged out!');
-    };
-  
-    const handleLogin = async (username, password) => {
-        try {
-          const response = await loginUser(username, password);
-          console.log("Complete API response data:", response.data);
-          
-          if (response.success) {
-            const token = response.data.token;
-            console.log("Setting token to state:", token);
-            logIn(token);
-          } else {
-            setMessage('Wrong credentials!');
-          }
-        } catch (error) {
-          setMessage('An error occurred during login.');
-          console.error(error);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const posts = await fetchPosts(token);  // Pass the token here
+        if (posts) {
+          setAllPosts(posts);
+          const filteredPosts = posts.filter((post) => post.isAuthor);
+          setUserPosts(filteredPosts);
         }
-      };           
-      
-  
-    return (
-      <Router>
-        <div className="App">
-          {message && <div className="message">{message}</div>}
-          <Header key={token} isLoggedIn={!!token} logOut={logOut} />
-          <Routes>
-            <Route path="/" element={<>
-              <h2>Welcome to the Stranger's Things</h2>
-              <LoginForm handleLogin={handleLogin} />
-              <p>Don't have an account? <Link to="/register">Sign up here</Link></p>
-            </>} />
-            <Route path="/register" element={<>
-              <h2>Create a new account</h2>
-              <RegisterForm logIn={logIn} />
-            </>} />
-            <Route path="/posts" element={<>
-              <h1>Posts</h1>
-              <Posts />
-            </>} />
-          </Routes>
-        </div>
-      </Router>
-    );
-  }
-  
-export default App
+      } catch (error) {
+        console.error('Failed to fetch all posts.', error);
+      }
+    };
+    fetchData();
+  }, [token]);  
+
+  const logIn = (newToken) => {
+    setToken(newToken);
+    sessionStorage.setItem('token', newToken);
+    setMessage('Successfully logged in!');
+  };
+
+  const logOut = () => {
+    setToken(null);
+    sessionStorage.removeItem('token');
+    setMessage('Successfully logged out!');
+  };
+
+  const addUserPost = (newPost) => {
+    setUserPosts((prevPosts) => {
+      console.log("Adding new post: ", newPost);  // Debugging line
+      return [...prevPosts, newPost];
+    });
+  };
+
+  const handleLogin = async (username, password) => {
+    try {
+      const response = await loginUser(username, password);
+      if (response.success) {
+        const token = response.data.token;
+        logIn(token);
+      } else {
+        setMessage('Wrong credentials!');
+      }
+    } catch (error) {
+      setMessage('An error occurred during login.');
+      console.error(error);
+    }
+  };
+
+  return (
+    
+    <Router>
+      <div className="App">
+        {message && <div className="message">{message}</div>}
+        <Header isLoggedIn={!!token} logOut={logOut} />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <h2>Welcome to the Stranger's Things</h2>
+                <LoginForm handleLogin={handleLogin} />
+                <p>
+                  Don't have an account? <Link to="/register">Sign up here</Link>
+                </p>
+              </>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <>
+                <h2>Create a new account</h2>
+                <RegisterForm logIn={logIn} />
+              </>
+            }
+          />
+          <Route
+            path="/posts"
+            element={
+              <>
+                <h1>Posts</h1>
+                <Posts posts={allPosts} />
+              </>
+            }
+          />
+          <Route path="/create-post" element={<CreatePost token={token} addUserPost={addUserPost} />} />
+          <Route path="/profile" element={<UserProfile allPosts={allPosts} />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
