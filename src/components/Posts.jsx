@@ -1,4 +1,4 @@
-import './Posts.css';
+import '../styles/posts.css';
 import React, { useEffect, useState } from 'react';
 import { fetchPosts } from '../api/posts';
 
