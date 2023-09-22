@@ -12,6 +12,7 @@ const Header = ({ isLoggedIn, logOut }) => {
       <div className="header">
         {isLoggedIn ? (
           <>
+            <Link to="/create-post">Create Post</Link>
             <Link to="/profile">Profile</Link>
             <Link to="/" onClick={logOut}>Logout</Link>
           </>
