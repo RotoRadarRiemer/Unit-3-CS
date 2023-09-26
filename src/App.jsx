@@ -19,7 +19,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const posts = await fetchPosts(token);  // Pass the token here
+        const posts = await fetchPosts(token);
         if (posts) {
           setAllPosts(posts);
           const filteredPosts = posts.filter((post) => post.isAuthor);
@@ -45,11 +45,10 @@ function App() {
   };
 
   const addUserPost = (newPost) => {
-    setUserPosts((prevPosts) => {
-      console.log("Adding new post: ", newPost);  // Debugging line
-      return [...prevPosts, newPost];
-    });
-  };
+    console.log("Adding new post: ", newPost);  // Debugging line
+    setUserPosts((prevPosts) => [...prevPosts, newPost]);
+    setAllPosts((prevPosts) => [...prevPosts, newPost]);
+};
 
   const handleLogin = async (username, password) => {
     try {
@@ -65,6 +64,11 @@ function App() {
       console.error(error);
     }
   };
+
+  const removeUserPost = (postId) => {
+    setAllPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
+  };
+  
 
   return (
     
@@ -98,13 +102,13 @@ function App() {
             path="/posts"
             element={
               <>
-                <h1>Posts</h1>
-                <Posts posts={allPosts} />
+                <h1>Stranger's Things Posts</h1>
+                <Posts token={token} posts={allPosts} />
               </>
             }
           />
           <Route path="/create-post" element={<CreatePost token={token} addUserPost={addUserPost} />} />
-          <Route path="/profile" element={<UserProfile allPosts={allPosts} />} />
+          <Route path="/profile" element={<UserProfile allPosts={allPosts} removeUserPost={removeUserPost} token={token}/>} />
         </Routes>
       </div>
     </Router>

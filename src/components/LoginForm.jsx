@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { loginUser } from '../api/authApi';
 import '../styles/loginForm.css';
 
 function LoginForm( {handleLogin} ) {
