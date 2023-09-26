@@ -11,8 +11,8 @@ export async function registerUser(username, password) {
         },
         body: JSON.stringify({
           user: {
-            username: 'jriemer61',
-            password: 'Password'
+            username,
+            password
           }
         })
       }
@@ -49,3 +49,22 @@ export async function loginUser(username, password) {
     console.error(err);
   }
 }
+
+export const getCurrentUserDetails = async (token) => {
+  try {
+    const response = await fetch(`${BASE_URL}/users/me`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+    const result = await response.json();
+    if (response.ok) {
+      return result;
+    }
+    throw new Error(result.error);
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};

@@ -1,12 +1,38 @@
-.welcome-header {
-    font-size: 2em;
-    margin-bottom: 20px;
-    color: blue;
-  }
-  
-  .posts-header {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-    color: green;
-  }
-  
+.welcome-header, .posts-header, .messages-header {
+  font-family: Arial, sans-serif;
+  margin-top: 20px;
+  text-align: center;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.messages-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.messages-container > div {
+  background-color: #f9f9f9; 
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 10px;
+  width: 80%;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.messages-container p {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.messages-container p:last-child {
+  margin-bottom: 0;
+}
+
+.messages-container strong {
+  font-weight: bold;
+  color: #333;
+}

@@ -27,3 +27,8 @@
 .author {
     font-style: italic;
 }
+
+.search-container {
+    text-align: right;
+    margin-bottom: 20px;
+}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { makePost } from '../api/makingAPost';
-import '../styles/CreatePost.css'
+import '../styles/CreatePost.css';
 
 const CreatePost = ({ token, addUserPost }) => {
   const [post, setPost] = useState({
@@ -9,6 +9,8 @@ const CreatePost = ({ token, addUserPost }) => {
     price: "",
     willDeliver: false
   });
+  
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -31,12 +33,25 @@ const CreatePost = ({ token, addUserPost }) => {
     const result = await makePost(token, post);
     if (result.success) {
         addUserPost(result.data.post);
+        setSuccessMessage("Your post has been successfully created!");
+        setPost({
+            title: "",
+            description: "",
+            price: "",
+            willDeliver: false
+        });
+        
+        setTimeout(() => {
+            setSuccessMessage("");
+        }, 3000); // Clears the message after 3 seconds
     }
     console.log(result);
   };
 
   return (
     <div className="create-post-form">
+        {successMessage && <div className="success-message">{successMessage}</div>}
+        
         <form onSubmit={handleSubmit}>
         <input 
             type="text" 
